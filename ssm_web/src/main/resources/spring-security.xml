@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/security
+    http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <!--1、配置未登录的情况下，需要放行的资源路径 ，主要就是静态资源和登录和登录失败的界面 -->
+    <security:http pattern="/login.jsp" security="none"/>
+    <security:http pattern="/failer.jsp" security="none"/>
+    <security:http pattern="/css/**" security="none"/>
+    <security:http pattern="/img/**" security="none"/>
+    <security:http pattern="/plugins/**" security="none"/>
+
+    <security:http auto-config="true" use-expressions="false">
+        <!-- 2、配置登录的相关的参数 -->
+        <!--哪些访问的资源需要相应的权限 -->
+        <security:intercept-url pattern="/**" access="ROLE_USER,ROLE_ADMIN"/>
+        <!-- 配置登录的请求，登录的界面，登录成功后跳转的界面及登录失败时跳转的界面 -->
+        <security:form-login
+                login-page="/login.jsp"
+                login-processing-url="/login.do"
+                default-target-url="/index.jsp"
+                authentication-failure-url="/failer.jsp"
+        />
+
+        <!-- 关闭跨域请求 -->
+        <security:csrf disabled="true"/>
+
+        <!-- 退出 -->
+        <security:logout invalidate-session="true" logout-url="/logout.do" logout-success-url="/login.jsp" />
+
+    </security:http>
+
+    <!-- 3、配置 访问数据库来实现 登录认证的操作 -->
+    <security:authentication-manager>
+        <!--指定security框架，实现数据库访问校验时，要访问的service -->
+        <security:authentication-provider user-service-ref="userService"/>
+    </security:authentication-manager>
+</beans>
