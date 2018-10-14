@@ -30,13 +30,19 @@
         <security:csrf disabled="true"/>
 
         <!-- 退出 -->
-        <security:logout invalidate-session="true" logout-url="/logout.do" logout-success-url="/login.jsp" />
+        <security:logout invalidate-session="true" logout-url="/logout" logout-success-url="/login.jsp" />
 
     </security:http>
 
     <!-- 3、配置 访问数据库来实现 登录认证的操作 -->
     <security:authentication-manager>
         <!--指定security框架，实现数据库访问校验时，要访问的service -->
-        <security:authentication-provider user-service-ref="userService"/>
+        <security:authentication-provider user-service-ref="userService">
+            <!-- 配置加密的方式-->
+            <security:password-encoder ref="passwordEncoder"/>
+        </security:authentication-provider>
     </security:authentication-manager>
+
+    <!-- 配置加密类 -->
+    <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
 </beans>
